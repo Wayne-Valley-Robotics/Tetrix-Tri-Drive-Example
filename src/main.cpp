@@ -7,7 +7,7 @@ PS4 ps4;
 
 // Constants
 const int DEADZONE = 10;            // joystick deadzone range
-const int MOTOR_MAX_SPEED = 50;     // motor power level (0-100)
+const int MOTOR_MAX_SPEED = 60;     // motor power level (0-100)
 const bool BRAKE_ON_RELEASE = true; // i got bored
 
 const int MOTOR_FRONT_EXPANSION = 1; // front motor expansion address
@@ -51,7 +51,7 @@ void loop()
   // Input logic
 
   // brake on release logic
-  if (BRAKE_ON_RELEASE * ((abs(btnUp) + abs(btnDown) + abs(btnLeft) + abs(btnRight) + abs(btnRotL) + abs(btnRotR)) > 0)) // if input from any directions, else skip eval logic and brake
+  if ((abs(btnUp) + abs(btnDown) + abs(btnLeft) + abs(btnRight) + abs(btnRotL) + abs(btnRotR)) > 0) // if input from any directions, else skip eval logic and brake
   {
     // Forward/back input processing
     if (btnUp > 0)
@@ -100,11 +100,12 @@ void loop()
     }
   }
   else
-  { // continuation of brake logic
-    // brake
-    powerFront = 125;
-    powerLeft = 125;
-    powerRight = 125;
+  { // continuation of brake logic, we know we need to brake
+    // brake == 125, coast == 0
+    int brakePower = BRAKE_ON_RELEASE * 125; // if setting is on, brake, else coast
+    powerFront = brakePower;
+    powerLeft = brakePower;
+    powerRight = brakePower;
   }
   // Set motor powers
   exc.setMotorPower(MOTOR_FRONT_EXPANSION, MOTOR_FRONT_PORT, powerFront);
