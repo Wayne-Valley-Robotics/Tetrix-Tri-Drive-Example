@@ -51,7 +51,7 @@ void loop()
   // Input logic
 
   // brake on release logic
-  if ((abs(btnUp) + abs(btnDown) + abs(btnLeft) + abs(btnRight) + abs(btnRotL) + abs(btnRotR)) > 0) // if input from any directions, else skip eval logic and brake
+  if (BRAKE_ON_RELEASE * ((abs(btnUp) + abs(btnDown) + abs(btnLeft) + abs(btnRight) + abs(btnRotL) + abs(btnRotR)) > 0)) // if input from any directions, else skip eval logic and brake
   {
     // Forward/back input processing
     if (btnUp > 0)
