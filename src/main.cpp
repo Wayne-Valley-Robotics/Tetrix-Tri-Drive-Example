@@ -10,6 +10,7 @@ const int DEADZONE = 10;            // joystick deadzone range
 const int MOTOR_MAX_SPEED = 60;     // motor power level (0-100)
 const bool BRAKE_ON_RELEASE = true; // i got bored
 
+// Motor ports
 const int MOTOR_FRONT_EXPANSION = 1; // front motor expansion address
 const int MOTOR_FRONT_PORT = 1;      // front motor port
 
@@ -19,10 +20,19 @@ const int MOTOR_LEFT_PORT = 2;      // left motor port
 const int MOTOR_RIGHT_EXPANSION = 1; // right motor expansion address
 const int MOTOR_RIGHT_PORT = 2;      // right motor port
 
+// Direction inversion, 1 = normal, -1 = inverted (it is used as a multiplier)
+const int INVERT_FRONT = -1;
+const int INVERT_LEFT = -1;
+const int INVERT_RIGHT = 1;
+
+
+
+
 // Initialize motor powers so as to avoid reinitialization each loop
 int powerFront = 0;
 int powerLeft = 0;
 int powerRight = 0;
+
 
 void setup()
 {
@@ -107,6 +117,11 @@ void loop()
     powerLeft = brakePower;
     powerRight = brakePower;
   }
+
+  // Apply inversion settings
+  powerFront = powerFront * invertFront;
+  powerLeft = powerLeft * invertLeft;
+  powerRight = powerRight * invertRight;
   // Set motor powers
   exc.setMotorPower(MOTOR_FRONT_EXPANSION, MOTOR_FRONT_PORT, powerFront);
   exc.setMotorPower(MOTOR_LEFT_EXPANSION, MOTOR_LEFT_PORT, powerLeft);
