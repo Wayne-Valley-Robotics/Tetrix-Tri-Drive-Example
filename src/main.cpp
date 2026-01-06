@@ -25,15 +25,6 @@ const int INVERT_FRONT = -1;
 const int INVERT_LEFT = -1;
 const int INVERT_RIGHT = 1;
 
-
-
-
-// Initialize motor powers so as to avoid reinitialization each loop
-int powerFront = 0;
-int powerLeft = 0;
-int powerRight = 0;
-
-
 void setup()
 {
   prizm.PrizmBegin(); // tetrix is garbage
@@ -41,7 +32,11 @@ void setup()
 
 void loop()
 {
+  // reinitialize variables each loop
   int motorSpeed = 0;
+  int powerFront = 0;
+  int powerLeft = 0;
+  int powerRight = 0;
   // store joystick values to avoid streneuously calling this stupid library (these three alone should take more than 100ms alone)
   int joyLY = ps4.Stick(LY);
   int joyLX = ps4.Stick(LX);
