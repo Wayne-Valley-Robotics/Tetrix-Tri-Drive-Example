@@ -119,9 +119,9 @@ void loop()
   }
 
   // Apply inversion settings
-  powerFront = powerFront * invertFront;
-  powerLeft = powerLeft * invertLeft;
-  powerRight = powerRight * invertRight;
+  powerFront = powerFront * INVERT_FRONT;
+  powerLeft = powerLeft * INVERT_LEFT;
+  powerRight = powerRight * INVERT_RIGHT;
   // Set motor powers
   exc.setMotorPower(MOTOR_FRONT_EXPANSION, MOTOR_FRONT_PORT, powerFront);
   exc.setMotorPower(MOTOR_LEFT_EXPANSION, MOTOR_LEFT_PORT, powerLeft);
