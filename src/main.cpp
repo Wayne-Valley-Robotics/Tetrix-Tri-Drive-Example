@@ -4,6 +4,12 @@ void setup()
 {
   prizm.PrizmBegin();
   Serial.begin(115200);
+  int batteryWarnLevel = batteryCheck();
+  if (batteryWarnLevel >= 3)
+  {
+    Serial.println("Battery level low. Warning level " + batteryWarnLevel);
+    prizm.setRedLED(HIGH);
+  }
 }
 
 void loop()

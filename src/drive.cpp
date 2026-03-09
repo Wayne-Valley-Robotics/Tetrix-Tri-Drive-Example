@@ -7,11 +7,11 @@ PS4 ps4;
 void updateDrive()
 {
     // Reinitialize variables each loop
-    int powerFront = 0;
-    int powerLeft = 0;
-    int powerRight = 0;
+    int outputFront = 0;
+    int outputLeft = 0;
+    int outputRight = 0;
     int motorSpeed = 0;
-    // Store joystick values to avoid streneuously calling this stupid library (these three alone should take more than 100ms alone)
+    // Store joystick values to avoid streneuously polling the motor expansions
     int joyLY = ps4.Stick(LY) - 128; // set center to 0
     int joyLX = ps4.Stick(LX) - 128;
     int joyRX = ps4.Stick(RX) - 128;
@@ -35,65 +35,65 @@ void updateDrive()
     if ((abs(btnUp) + abs(btnDown) + abs(btnLeft) + abs(btnRight) + abs(btnRotL) + abs(btnRotR)) > 0)
     {
         // Forward/back input processing
-        if (btnUp > 0)
+        if (abs(btnUp) > 0)
         {
-            motorSpeed = map(btnUp, joyMin, joyMax, -MOTOR_MAX_SPEED, MOTOR_MAX_SPEED);
-            powerFront += motorSpeed;
-            powerLeft += motorSpeed;
-            powerRight += motorSpeed;
+            motorSpeed = map(btnUp, joyMin, joyMax, -MOTOR_MAX_OUTPUT, MOTOR_MAX_OUTPUT);
+            outputFront += motorSpeed;
+            outputLeft += motorSpeed;
+            outputRight += motorSpeed;
         }
         if (abs(btnDown) > 0)
         {
-            motorSpeed = map(abs(btnDown), joyMin, joyMax, -MOTOR_MAX_SPEED, MOTOR_MAX_SPEED);
-            powerFront -= motorSpeed;
-            powerLeft -= motorSpeed;
-            powerRight -= motorSpeed;
+            motorSpeed = map(abs(btnDown), joyMin, joyMax, -MOTOR_MAX_OUTPUT, MOTOR_MAX_OUTPUT);
+            outputFront -= motorSpeed;
+            outputLeft -= motorSpeed;
+            outputRight -= motorSpeed;
         }
 
         // Strafe left/right input processing (triangle drive logic)
         if (abs(btnLeft) > 0)
         {
-            motorSpeed = map(abs(btnLeft), joyMin, joyMax, -MOTOR_MAX_SPEED, MOTOR_MAX_SPEED);
-            powerLeft += motorSpeed;
-            powerRight -= motorSpeed;
+            motorSpeed = map(abs(btnLeft), joyMin, joyMax, -MOTOR_MAX_OUTPUT, MOTOR_MAX_OUTPUT);
+            outputLeft += motorSpeed;
+            outputRight -= motorSpeed;
         }
         if (abs(btnRight) > 0)
         {
-            motorSpeed = map(abs(btnRight), joyMin, joyMax, -MOTOR_MAX_SPEED, MOTOR_MAX_SPEED);
-            powerLeft -= motorSpeed;
-            powerRight += motorSpeed;
+            motorSpeed = map(abs(btnRight), joyMin, joyMax, -MOTOR_MAX_OUTPUT, MOTOR_MAX_OUTPUT);
+            outputLeft -= motorSpeed;
+            outputRight += motorSpeed;
         }
 
         // Rotation input processing
         if (abs(btnRotL) > 0)
         {
-            motorSpeed = map(abs(btnRotL), joyMin, joyMax, -MOTOR_MAX_SPEED, MOTOR_MAX_SPEED);
-            powerFront -= motorSpeed;
-            powerLeft += motorSpeed;
-            powerRight -= motorSpeed;
+            motorSpeed = map(abs(btnRotL), joyMin, joyMax, -MOTOR_MAX_OUTPUT, MOTOR_MAX_OUTPUT);
+            outputFront -= motorSpeed;
+            outputLeft += motorSpeed;
+            outputRight -= motorSpeed;
         }
         if (abs(btnRotR) > 0)
         {
-            motorSpeed = map(abs(btnRotR), joyMin, joyMax, -MOTOR_MAX_SPEED, MOTOR_MAX_SPEED);
-            powerFront += motorSpeed;
-            powerLeft -= motorSpeed;
-            powerRight += motorSpeed;
+            motorSpeed = map(abs(btnRotR), joyMin, joyMax, -MOTOR_MAX_OUTPUT, MOTOR_MAX_OUTPUT);
+            outputFront += motorSpeed;
+            outputLeft -= motorSpeed;
+            outputRight += motorSpeed;
         }
     }
     else
     {
-        // Continuation of brake logic, we know we need to brake
+        // Continuation of brake logic, at this point we know we need to brake
         // brake == 125, coast == 0
         int brakePower = BRAKE_ON_RELEASE * 125;
-        powerFront = brakePower;
-        powerLeft = brakePower;
-        powerRight = brakePower;
+        outputFront = brakePower;
+        outputLeft = brakePower;
+        outputRight = brakePower;
     }
 
     // Apply inversion settings
-    powerFront = powerFront * INVERT_FRONT;
-    powerLeft = powerLeft * INVERT_LEFT;
-    powerRight = powerRight * INVERT_RIGHT;
+    outputFront = outputFront * INVERT_FRONT;
+    outputLeft = outputLeft * INVERT_LEFT;
+    outputRight = outputRight * INVERT_RIGHT;
 
     Serial.print("Joy: ");
     Serial.print(joyLY);
@@ -102,15 +102,15 @@ void updateDrive()
     Serial.print("\t");
     Serial.print(joyRX);
     Serial.print("\tPowers: ");
-    Serial.print(powerFront);
+    Serial.print(outputFront);
     Serial.print("\t");
-    Serial.print(powerLeft);
+    Serial.print(outputLeft);
     Serial.print("\t");
-    Serial.print(powerRight);
+    Serial.print(outputRight);
     Serial.println();
 
     // Set motor powers
-    // exc.setMotorPower(MOTOR_FRONT_EXPANSION, MOTOR_FRONT_PORT, powerFront);
-    // exc.setMotorPower(MOTOR_LEFT_EXPANSION, MOTOR_LEFT_PORT, powerLeft);
-    // exc.setMotorPower(MOTOR_RIGHT_EXPANSION, MOTOR_RIGHT_PORT, powerRight);
+    exc.setMotorPower(MOTOR_FRONT_EXPANSION, MOTOR_FRONT_PORT, outputFront);
+    exc.setMotorPower(MOTOR_LEFT_EXPANSION, MOTOR_LEFT_PORT, outputLeft);
+    exc.setMotorPower(MOTOR_RIGHT_EXPANSION, MOTOR_RIGHT_PORT, outputRight);
 }
